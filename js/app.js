@@ -1,6 +1,6 @@
 var App = {
     init: function(){        
-        this.myRootRef = new Firebase('https://incandescent-fire-8371.firebaseio.com/');
+        this.myRootRef = new Firebase('https://my-firebase-name.firebaseIO-demo.com/');
     },
     save: function (item) {
         this.myRootRef.child("users").child(item.Id).set(item); 
@@ -35,9 +35,12 @@ var App = {
         this.render();
     },
     update:function(item){
-        console.log(item);
-        /*this.myRootRef.child("users").child(item.id).update(item);  
-        this.render();*/
+        var onComplete = function(error) {
+          if (error) alert('Fallo la actualización.');
+          else alert('Se actualización el item.');
+        };
+        this.myRootRef.child("users").child(item.Id).update(item,onComplete);  
+        this.render();
     }
 
 };           
