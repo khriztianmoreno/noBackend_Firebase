@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="description" content="">
+		<meta name="author" content="">
+		<link rel="shortcut icon" href="img/favicon.ico">
+		<title>Agenda Personal || Firebase</title>
+		<!-- Bootstrap core CSS -->
+		<link href="css/bootstrap.css" rel="stylesheet">
+		<!-- Custom styles for this template -->
+		<link href="css/style.css" rel="stylesheet">
+		<!-- Just for debugging purposes. Don't actually copy this line! -->
+		<!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+		<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+		<!--[if lt IE 9]>
+		<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+		<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+	</head>
+	<body>
+		<!-- Fixed navbar -->
+		<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+			<div class="container">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="#">Agenda</a>
+				</div>
+				<div class="navbar-collapse collapse">
+					<ul class="nav navbar-nav">
+						<li class="active"><a href="#">Home</a></li>
+						<li><a href="#contact">Acerca de</a></li>
+					</ul>
+				</div>
+				<!--/.nav-collapse -->
+			</div>
+		</div>
+		<div class="container">
+			<!-- Main component for a primary marketing message or call to action -->
+			<div class="jumbotron">				
+				<h1>Firebase</h1>	
+				<form id="frmAgregarContacto">					
+					<div id="fields-form" class="row">
+						<input type="hidden" id="ident" />
+						<div class="col-md-6">
+							<div class="form-group">
+								<label for="name">
+								Nombre</label>
+								<input type="text" class="form-control" id="name" placeholder="Enter name" required="required" />
+							</div>
+							<div class="form-group">
+								<label for="direccion">
+								Direccion</label>
+								<input type="text" class="form-control" id="direccion"  placeholder="Enter direccion" required="required" />
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="form-group">
+								<label for="email">
+								Email</label>
+								<div class="input-group">
+									<span class="input-group-addon"><span class="glyphicon glyphicon-envelope"></span>
+									</span>
+									<input type="email" class="form-control" id="email" placeholder="Enter email" required="required" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="cellphone">
+								Celular</label>
+								<div class="input-group">
+									<span class="input-group-addon"><span class="glyphicon glyphicon-phone-alt"></span>
+									</span>
+									<input type="text" class="form-control" id="cellphone" placeholder="Enter Cell phone" required="required" />
+								</div>
+							</div>
+						</div>
+						<div class="col-md-12">
+							<div id="buttons" class="pull-right">
+								<input type="submit" id="btnSubmit" class="btn btn-lg btn-primary" value="Crear registro" />       	
+							</div>
+						</div>					
+					</div>
+					<!-- / class="row" -->
+				</form>	
+			</div>
+		</div>
+		<div class="container">
+			<h2 class="sub-header">Agenda de Contactos</h2>
+			<div class="table-responsive">
+				<table id="tblTablaContactos" class="table table-striped">
+					<thead>
+						<tr>
+							<th>Nombre</th>
+							<th>Dirección</th>
+							<th>Celular</th>
+							<th>Email</th>
+							<th>Editar</th>
+							<th>Eliminar</th>
+						</tr>
+					</thead>
+					<tbody>
+						<!-- el cuerpo de la tabla sera llenado con JavaScript --> 
+					</tbody>
+				</table>
+			</div>
+			<div class="pull-right"><button id="deleteStorage" type="button" class="btn btn-danger">Eliminar Storage</button></div>
+		</div>
+
+		
+		<!-- Bootstrap core JavaScript
+			================================================== -->
+		<!-- Placed at the end of the document so the pages load faster -->
+		<script src="js/libs/jquery.js"></script>
+		<script type='text/javascript' src='https://cdn.firebase.com/js/client/1.0.15/firebase.js'></script>
+		<script src="js/libs/underscore.js"></script>
+		<script src="js/libs/bootstrap.min.js"></script>
+		<script src="js/app.js"></script>
+		<script type="text/javascript">
+			$( document ).ready(function() {
+				App.init();
+				App.render();
+
+				$('#frmAgregarContacto').on('submit', addContact);
+				 //Eliminar Item
+				$(document.body).on('click', '.remove-element', function () {
+                    App.remove(getTodoItemId(this));
+                });
+
+                function addContact(eEvento) {        
+                    //evitamos que el form se envie (para que no recargue la pagina)
+                    eEvento.preventDefault();
+
+                    var uniqueId = $("#ident").val();
+                    if (uniqueId) {
+                    	var item = { 
+	                    	Id: $("#ident").val(),
+	                        name: $("#name").val(), 
+	                        address: $("#direccion").val(),  
+	                        cellphone: $("#cellphone").val(),
+	                        email: $("#email").val()
+	                    };
+	                    App.update(item);
+                    }else{
+                    	var item = { 
+	                    	Id: ID(),
+	                        name: $("#name").val(), 
+	                        address: $("#direccion").val(),  
+	                        cellphone: $("#cellphone").val(),
+	                        email: $("#email").val()
+	                    };
+	                    // Guardamos el nuevo contacto
+                    	App.save(item);
+                    };                     
+                }; 
+
+                //Actualizar Item
+                $(document.body).on('click', '.edit-element', function () {
+                	var cont=0;
+                	var mytable = "#"+getTodoItemId(this)+" td";
+
+                	$("#ident").val(getTodoItemId(this));
+                	$(mytable).each(function(){
+                		var texto = $(this).text();
+                		switch(cont) {
+							case 0:
+							    $("#name").val(texto);
+							    cont++;
+							    break;
+							case 1:
+							    $("#direccion").val(texto);
+							    cont++;
+							    break;
+							case 2:
+							    $("#cellphone").val(texto);
+							    cont++;
+							    break;
+							case 3:
+							    $("#email").val(texto);
+							    cont++;
+							    break;
+						}
+					});
+
+
+			    });
+
+               
+
+                function getTodoItemId(formElement) {
+			        return $(formElement).closest('tr').attr('data-id');
+			    }
+
+                var ID = function () {
+				  return '_' + Math.random().toString(36).substr(2, 9);
+				};
+			});
+		</script>
+	</body>
+</html>
